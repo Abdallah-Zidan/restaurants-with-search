@@ -3,20 +3,11 @@ import { ElasticsearchService } from '@nestjs/elasticsearch';
 @Injectable()
 export class SearchService {
   private _index = 'random';
-  constructor(private readonly elasticsearchService: ElasticsearchService) {
-    this._index = process.env.ELASTIC_SEARCH_INDEX;
-    this.createIndex();
-  }
+  constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
-  //* ensure index be created if not exists
-  async createIndex() {
-    const checkIndex = await this.elasticsearchService.indices.exists({
-      index: this._index,
-    });
-    if (!checkIndex)
-      await this.elasticsearchService.indices.create({
-        index: this._index,
-      });
+  async configureIndex(index: string) {
+    this._index = index;
+    await this.createIndex();
   }
 
   async index<T>(doc: T) {
@@ -40,5 +31,16 @@ export class SearchService {
       },
     });
     return result.hits.hits.map((item) => item._source);
+  }
+
+  //* ensure index be created if not exists
+  private async createIndex() {
+    const checkIndex = await this.elasticsearchService.indices.exists({
+      index: this._index,
+    });
+    if (!checkIndex)
+      await this.elasticsearchService.indices.create({
+        index: this._index,
+      });
   }
 }

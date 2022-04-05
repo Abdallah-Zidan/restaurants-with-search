@@ -4,6 +4,12 @@ import { SearchService } from './serach.service';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+/**
+ ** this module abstracts common tasks with elasticsearch that
+ ** can be used across the othe modules
+ *! note: using envrironment variables directly for simplicity but configuration
+ *! service is a better aproach to manage configurations
+ */
 @Module({
   imports: [
     ElasticsearchModule.register({
@@ -16,6 +22,11 @@ dotenv.config();
         password: process.env.ELASTIC_SEARCH_PASS,
       },
       tls: {
+        /**
+         ** note: this is for simplicity running locally
+         ** tls options should be carefully configured and meet
+         ** the elasticsearch serverrequirements
+         */
         rejectUnauthorized: false,
       },
     }),

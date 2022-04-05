@@ -23,17 +23,20 @@ export class RestaurantsService {
     private searchService: SearchService,
   ) {
     this.restaurantModel.ensureIndexes();
+    //* configure query service to accept geospatial queries on the attribute location
     this.queryService.setGeospatialAttributes(['location']);
+    this.searchService.configureIndex(process.env.RESTAURANTS_SEARCH_INDEX);
   }
 
   async create(body: RestaurantDto) {
     const user = await this.findUserOrThrow(body.user);
     const restaurant = await this.restaurantModel.create(dtoToRestaurant(body));
+    //* add the created restaurant to user owned restaurants
     user.restaurants.push(restaurant);
     await user.save();
 
     /**
-     ** indexing newly created restaurants into elasticsearch
+     ** index newly created restaurants into elasticsearch
      ** to be available for searching, however an a plugin or utility to sync
      ** documents from mongo to elastic search might be a better solution
      */
