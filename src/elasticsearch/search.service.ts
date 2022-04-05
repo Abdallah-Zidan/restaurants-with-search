@@ -25,7 +25,7 @@ export class SearchService {
           multi_match: {
             query: text,
             fields,
-            fuzziness: 'AUTO',
+            fuzziness: 2,
           },
         },
       },

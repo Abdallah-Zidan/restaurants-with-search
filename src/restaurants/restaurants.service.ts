@@ -11,7 +11,7 @@ import {
 import { SearchRestaurantsQuery } from './dto/search.dto';
 import { QueryService } from '../mongo-shared/query.service';
 import { UsersService } from 'src/users/users.service';
-import { SearchService } from 'src/elasticsearch/serach.service';
+import { SearchService } from 'src/elasticsearch/search.service';
 
 @Injectable()
 export class RestaurantsService {
@@ -40,7 +40,10 @@ export class RestaurantsService {
      ** to be available for searching, however an a plugin or utility to sync
      ** documents from mongo to elastic search might be a better solution
      */
-    await this.searchService.index<RestaurantDto>(body);
+    await this.searchService.index<RestaurantDto & { id: string }>({
+      ...body,
+      id: restaurant.id,
+    });
     return restaurant;
   }
 
